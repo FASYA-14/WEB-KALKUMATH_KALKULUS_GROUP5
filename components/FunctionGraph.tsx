@@ -45,53 +45,54 @@ const FunctionGraph: React.FC<FunctionGraphProps> = ({ expression, range = [-10,
   }
 
   return (
-    <div className="h-80 w-full bg-white p-6 rounded-[2rem] shadow-xl shadow-indigo-50 border border-indigo-50">
-      <h4 className="text-sm font-bold text-slate-500 mb-6 flex items-center gap-2">
+    <div className="w-full h-80 bg-white p-6 rounded-[2rem] shadow-xl shadow-indigo-50 border border-indigo-50 flex flex-col">
+      <h4 className="text-sm font-bold text-slate-500 mb-4 flex items-center gap-2">
         <span className="w-2 h-2 bg-violet-500 rounded-full"></span>
         Visualisasi f(x) = {expression}
       </h4>
-      <ResponsiveContainer width="100%" height="85%">
-        <AreaChart data={data}>
-          <defs>
-            <linearGradient id="colorY" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-          <XAxis 
-            dataKey="x" 
-            type="number" 
-            domain={['auto', 'auto']} 
-            tick={{fontSize: 11, fill: '#94a3b8'}}
-            axisLine={false}
-            tickLine={false}
-          />
-          <YAxis 
-            type="number" 
-            domain={['auto', 'auto']} 
-            tick={{fontSize: 11, fill: '#94a3b8'}}
-            axisLine={false}
-            tickLine={false}
-          />
-          <Tooltip 
-            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', padding: '12px' }}
-            labelFormatter={(val) => `x: ${val}`}
-          />
-          <ReferenceLine y={0} stroke="#cbd5e1" strokeWidth={1} />
-          <ReferenceLine x={0} stroke="#cbd5e1" strokeWidth={1} />
-          <Area 
-            type="monotone" 
-            dataKey="y" 
-            stroke="#8b5cf6" 
-            fill="url(#colorY)"
-            strokeWidth={3} 
-            dot={false} 
-            animationDuration={1500}
-            animationEasing="ease-in-out"
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+      <div className="flex-1 w-full min-h-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+            <defs>
+              <linearGradient id="colorY" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+            <XAxis 
+              dataKey="x" 
+              type="number" 
+              domain={['auto', 'auto']} 
+              tick={{fontSize: 10, fill: '#94a3b8'}}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis 
+              type="number" 
+              domain={['auto', 'auto']} 
+              tick={{fontSize: 10, fill: '#94a3b8'}}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip 
+              contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', padding: '12px', fontSize: '12px' }}
+              labelFormatter={(val) => `x: ${val}`}
+            />
+            <ReferenceLine y={0} stroke="#cbd5e1" strokeWidth={1} />
+            <ReferenceLine x={0} stroke="#cbd5e1" strokeWidth={1} />
+            <Area 
+              type="monotone" 
+              dataKey="y" 
+              stroke="#8b5cf6" 
+              fill="url(#colorY)"
+              strokeWidth={3} 
+              dot={false} 
+              animationDuration={1000}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };
