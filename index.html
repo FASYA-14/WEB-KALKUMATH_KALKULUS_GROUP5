@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KALKUMATH - Kalkulator Kalkulus Modern</title>
+  <title>KALKUMATH PRO - Kalkulator Kalkulus Modern</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -13,16 +13,12 @@
     :root {
       --primary-font: 'Outfit', sans-serif;
       --heading-font: 'Fraunces', serif;
-      --brand-violet: #7c3aed;
-      --brand-indigo: #4f46e5;
-      --brand-blue: #2563eb;
     }
     
     body { 
       font-family: var(--primary-font); 
       background-color: #fbfcfe;
       color: #0f172a;
-      -webkit-font-smoothing: antialiased;
     }
     
     h1, h2, h3, .font-heading {
@@ -30,111 +26,59 @@
       letter-spacing: -0.02em;
     }
 
-    .mathjax-wrapper .mjx-chtml { 
-      font-size: 1.15em !important; 
-    }
-    
-    @keyframes fadeInScale {
-      from { opacity: 0; transform: translateY(20px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    
     .animate-fadeIn {
-      animation: fadeInScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    .glass {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    
+
     .gradient-text {
-      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-size: 200% auto;
-    }
-
-    .gradient-bg {
-      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      font-family: var(--primary-font);
-      font-weight: 800;
-      color: white;
+      transition: all 0.3s ease;
     }
     
     .btn-primary:hover {
-      transform: translateY(-4px) scale(1.03);
-      box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.4);
-      filter: brightness(1.1);
-    }
-
-    .keypad-btn {
-      background: #ffffff;
-      border: 1px solid #f1f5f9;
-      padding: 0.9rem;
-      border-radius: 1.1rem;
-      font-weight: 700;
-      color: #334155;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      font-family: var(--primary-font);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    
-    .keypad-btn:hover {
-      background: #f8faff;
-      border-color: #4f46e5;
-      color: #4f46e5;
-      transform: scale(1.1);
-      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1);
-      z-index: 10;
-    }
-
-    .card-modern {
-      background: white;
-      border-radius: 2.5rem;
-      border: 1px solid #f1f5f9;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    
-    .card-modern:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 30px 60px -12px rgba(79, 70, 229, 0.12);
-      border-color: #e2e8f0;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
     }
 
     .input-modern {
-      transition: all 0.3s ease;
       background: #f8faff;
       border: 2px solid #f1f5f9;
+      transition: all 0.2s ease;
     }
     .input-modern:focus {
-      background: white;
       border-color: #4f46e5;
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+      background: white;
       outline: none;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
     }
   </style>
-<script type="importmap">
+  <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@19.0.0",
-    "react-dom/": "https://esm.sh/react-dom@19.0.0/",
-    "react/": "https://esm.sh/react@19.0.0/",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
     "@google/genai": "https://esm.sh/@google/genai@1.34.0",
     "recharts": "https://esm.sh/recharts@2.12.7",
-    "mathjs": "https://esm.sh/mathjs@13.2.0"
+    "mathjs": "https://esm.sh/mathjs@13.2.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
   }
 }
 </script>
 </head>
-<body class="overflow-x-hidden">
+<body>
   <div id="root"></div>
   <script type="module" src="./index.tsx"></script>
 </body>
