@@ -9,8 +9,3 @@ Dokumentasi ini berisi panduan singkat untuk menjalankan dan mengembangkan aplik
 ## Menjalankan Aplikasi Secara Lokal
 
 **Prasyarat:** Node.js
-
-1. Install dependency:
-   ```bash
-   npm install
-
