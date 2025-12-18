@@ -1,7 +1,6 @@
 
 import React, { useEffect, useRef } from 'react';
 
-// Add type definition for MathJax on the window object to fix TypeScript errors
 declare global {
   interface Window {
     MathJax: any;
@@ -17,15 +16,22 @@ const MathDisplay: React.FC<MathDisplayProps> = ({ math, block = false }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check if MathJax exists on window to avoid runtime errors and fix TS property access
     if (window.MathJax && containerRef.current) {
-      window.MathJax.typesetPromise([containerRef.current]);
+      // Membersihkan container sebelum render ulang jika perlu
+      window.MathJax.typesetPromise([containerRef.current]).catch((err: any) => console.error(err));
     }
   }, [math]);
 
+  // Jika math mengandung '$', asumsikan itu adalah teks campuran (AI Response)
+  // MathJax akan mencari delimiter $ atau $$ secara otomatis.
+  const isMixed = math.includes('$');
+
   return (
-    <div ref={containerRef} className={`mathjax-wrapper ${block ? 'my-4 text-center' : 'inline-block'}`}>
-      {block ? `\\[${math}\\]` : `\\(${math}\\)`}
+    <div 
+      ref={containerRef} 
+      className={`mathjax-wrapper prose prose-slate max-w-none ${block ? 'my-4 text-center' : 'inline-block'}`}
+    >
+      {isMixed ? math : (block ? `\\[${math}\\]` : `\\(${math}\\)`)}
     </div>
   );
 };
