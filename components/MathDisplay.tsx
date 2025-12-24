@@ -27,21 +27,21 @@ const MathDisplay: React.FC<MathDisplayProps> = ({ math, block = false, classNam
     };
 
     typeset();
-    // Re-run after a short delay for late rendering
-    const timer = setTimeout(typeset, 200);
+    // Re-run after a short delay to ensure everything is in the DOM
+    const timer = setTimeout(typeset, 300);
     return () => clearTimeout(timer);
   }, [math]);
 
-  // Enhanced detection for mixed content vs pure LaTeX
+  // Enhanced detection for mixed content vs pure LaTeX commands
   const hasDelimiters = math.includes('$') || math.includes('\\(') || math.includes('\\[');
-  const containsLatex = math.includes('\\') || math.includes('_') || math.includes('^') || math.includes('{');
+  const containsLatexCommands = math.includes('\\') || math.includes('_') || math.includes('^') || math.includes('{');
 
   let content = math;
-  if (!hasDelimiters && containsLatex) {
-    // Wrap if it's pure LaTeX without delimiters
+  if (!hasDelimiters && containsLatexCommands) {
+    // If it looks like LaTeX but has no delimiters, wrap it
     content = block ? `\\[${math}\\]` : `\\(${math}\\)`;
-  } else if (!hasDelimiters && !containsLatex && block) {
-    // Pure text but requested as block
+  } else if (!hasDelimiters && block) {
+    // Pure text block
     content = `\\[${math}\\]`;
   }
 
@@ -49,7 +49,7 @@ const MathDisplay: React.FC<MathDisplayProps> = ({ math, block = false, classNam
     <div 
       ref={containerRef} 
       className={`mathjax-wrapper prose prose-slate max-w-none ${invert ? 'prose-invert text-white' : 'text-slate-900'} ${block ? 'my-4 text-center block' : 'inline'} ${className}`}
-      style={{ wordBreak: 'break-word' }}
+      style={{ wordBreak: 'break-word', display: block ? 'block' : 'inline' }}
     >
       {content}
     </div>

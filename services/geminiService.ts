@@ -2,14 +2,15 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 const getApiKey = () => {
-  // Mencoba berbagai cara akses API KEY yang mungkin di Vercel/Vite
-  return (window as any).process?.env?.API_KEY || (process?.env?.API_KEY) || "";
+  // In Vercel/Vite, we often need to check both window.process and standard process
+  const key = (window as any).process?.env?.API_KEY || (process?.env?.API_KEY) || "";
+  return key;
 };
 
 export const getMathExplanation = async (type: string, expression: string, context: any) => {
   try {
     const apiKey = getApiKey();
-    if (!apiKey) throw new Error("API Key not found");
+    if (!apiKey) throw new Error("API Key not found. Please set API_KEY in your environment variables.");
     
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
@@ -24,7 +25,7 @@ ATURAN FORMAT OUTPUT:
 1. Mulailah dengan paragraf ringkasan konsep (2-3 kalimat).
 2. Tampilkan langkah-langkah dengan format persis: "LANGKAH X: [JUDUL]" di awal baris baru untuk setiap langkah.
 3. JANGAN gunakan tanda bintang (**) pada teks "LANGKAH X:".
-4. PENTING: Gunakan tanda dollar ($) untuk SEMUA rumus matematika (contoh: $f(x) = x^2$). Untuk rumus besar gunakan double dollar ($$).
+4. PENTING: Gunakan tanda dollar ($) untuk SEMUA rumus matematika (contoh: $f(x) = x^2$ atau $\\frac{a}{b}$). Jika rumus di baris baru gunakan double dollar ($$).
 5. Gunakan Bahasa Indonesia yang akademis namun ramah.`
         }]
       }],
@@ -33,7 +34,7 @@ ATURAN FORMAT OUTPUT:
     return response.text;
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "Maaf, terjadi kesalahan saat menghubungi server AI. Pastikan API KEY telah diatur dengan benar di dashboard Vercel.";
+    return `Gagal memproses penjelasan. Pesan Error: ${error instanceof Error ? error.message : 'Koneksi API Gagal'}`;
   }
 };
 
@@ -55,7 +56,7 @@ export const generateQuizQuestions = async (): Promise<any[]> => {
           ID Sesi: ${randomSeed}-${timestamp}
           
           ATURAN KETAT:
-          1. WAJIB membungkus SEMUA rumus matematika dengan tanda dollar tunggal ($...$).
+          1. WAJIB membungkus SEMUA rumus matematika (termasuk variabel tunggal) dengan tanda dollar tunggal ($...$).
           2. Pilihan jawaban harus singkat dan jika berupa matematika juga wajib dibungkus tanda dollar.
           3. Berikan pembahasan (explanation) yang mendalam menggunakan Bahasa Indonesia.` 
         }]
@@ -85,6 +86,6 @@ export const generateQuizQuestions = async (): Promise<any[]> => {
     return JSON.parse(text);
   } catch (e) {
     console.error("Failed to generate quiz questions", e);
-    return [];
+    throw e; // Throw so the UI can catch it and show appropriate error message
   }
 };

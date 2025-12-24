@@ -66,14 +66,17 @@ const Limits: React.FC = () => {
 
   const parseSteps = (text: string) => {
     if (!text) return { intro: "", steps: [] };
-    // Regex super kuat untuk mendeteksi variasi "Langkah X:"
-    const stepRegex = /(?:\*\*|)?(?:LANGKAH|Langkah|Step|step) \d+[:\- ]*(?:\*\*|)?/gi;
+    
+    // Split based on "LANGKAH X:" or "**LANGKAH X:**" with case-insensitive
+    const stepRegex = /(?:\*\*|)?(?:LANGKAH|Langkah|Step|step)\s+\d+[:\- ]*(?:\*\*|)?/gi;
     const parts = text.split(stepRegex);
+    
     const intro = parts[0]?.trim() || "";
     const steps = parts.slice(1).map(s => s.trim()).filter(s => s.length > 0);
     
-    if (steps.length === 0 && text.length > 0) {
-      return { intro: "", steps: [text] };
+    // Fallback if no steps were split but text exists
+    if (steps.length === 0 && text.trim().length > 0) {
+      return { intro: "", steps: [text.trim()] };
     }
     
     return { intro, steps };
