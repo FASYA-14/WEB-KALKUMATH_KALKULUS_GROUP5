@@ -17,6 +17,7 @@ const Derivatives: React.FC = () => {
   };
 
   const calculateDerivative = async () => {
+    if (!func) return;
     setLoading(true);
     try {
       let currentExpr = func;
@@ -41,6 +42,14 @@ const Derivatives: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const parseSteps = (text: string) => {
+    const stepRegex = /(?:\*\*|)?LANGKAH \d+[:\- ]+(?:\*\*|)?/gi;
+    const parts = text.split(stepRegex);
+    const intro = parts[0].trim();
+    const steps = parts.slice(1).map(s => s.trim());
+    return { intro, steps };
   };
 
   return (
@@ -106,28 +115,32 @@ const Derivatives: React.FC = () => {
             <div className="md:col-span-8 space-y-8">
               <h3 className="text-2xl font-black text-slate-800 font-heading pl-4">Langkah-Langkah Solusi</h3>
               <div className="bg-white p-12 rounded-[3rem] shadow-xl border border-slate-50 space-y-10">
-                <div className="text-slate-500 font-medium leading-relaxed bg-indigo-50/30 p-8 rounded-3xl border border-indigo-100 italic">
-                   {result.explanation.split('Langkah 1:')[0]}
-                </div>
-                
-                <div className="space-y-8">
-                  {result.explanation.split('Langkah ').slice(1).map((step: string, i: number) => {
-                    const [title, ...content] = step.split(':');
-                    return (
-                      <div key={i} className="flex gap-6 animate-fadeIn">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xl shadow-sm">
-                          {i + 1}
+                {(() => {
+                  const { intro, steps } = parseSteps(result.explanation);
+                  return (
+                    <>
+                      {intro && (
+                        <div className="text-slate-500 font-medium leading-relaxed bg-indigo-50/30 p-8 rounded-3xl border border-indigo-100 italic">
+                          {intro}
                         </div>
-                        <div className="space-y-3 pt-2">
-                          <h4 className="font-black text-slate-800 text-xl leading-snug">Langkah {title}</h4>
-                          <div className="text-slate-600 font-medium leading-relaxed prose max-w-none">
-                            <MathDisplay math={content.join(':')} />
+                      )}
+                      <div className="space-y-8">
+                        {steps.map((step, i) => (
+                          <div key={i} className="flex gap-6 animate-fadeIn">
+                            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xl shadow-sm">
+                              {i + 1}
+                            </div>
+                            <div className="space-y-3 pt-2 flex-1">
+                              <div className="text-slate-600 font-medium leading-relaxed prose max-w-none">
+                                <MathDisplay math={step} />
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        ))}
                       </div>
-                    );
-                  })}
-                </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 

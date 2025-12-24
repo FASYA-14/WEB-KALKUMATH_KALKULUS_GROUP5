@@ -14,15 +14,15 @@ export const getMathExplanation = async (type: string, expression: string, conte
       contents: [{
         parts: [{
           text: `Sebagai asisten ahli KALKUMATH, jelaskan langkah demi langkah penyelesaian ${type} untuk persoalan: ${expression}. 
-          
-          Konteks Data: ${JSON.stringify(context)}.
-          
-          ATURAN FORMAT OUTPUT:
-          1. Mulailah dengan paragraf ringkasan konsep (2-3 kalimat).
-          2. Gunakan format "Langkah X: [Judul Langkah]" diikuti penjelasannya untuk setiap tahapan.
-          3. Gunakan LaTeX untuk SEMUA rumus matematika (bungkus dengan $ untuk inline atau $$ untuk blok).
-          4. Gunakan Bahasa Indonesia yang akademis namun ramah.
-          5. Pastikan penjelasan fokus pada "mengapa" langkah tersebut diambil.`
+
+Konteks Data: ${JSON.stringify(context)}.
+
+ATURAN FORMAT OUTPUT:
+1. Mulailah dengan paragraf ringkasan konsep (2-3 kalimat).
+2. Tampilkan langkah-langkah dengan format persis: "LANGKAH X: [JUDUL]" di awal baris baru untuk setiap langkah.
+3. JANGAN gunakan tanda bintang (**) pada teks "LANGKAH X:".
+4. PENTING: Gunakan tanda dollar ($) untuk SEMUA rumus matematika (contoh: $f(x) = x^2$). Untuk rumus besar gunakan double dollar ($$).
+5. Gunakan Bahasa Indonesia yang akademis namun ramah.`
         }]
       }],
     });
@@ -30,7 +30,7 @@ export const getMathExplanation = async (type: string, expression: string, conte
     return response.text;
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "Maaf, terjadi kesalahan saat menghubungi server AI. Pastikan ekspresi matematika Anda benar.";
+    return "Maaf, terjadi kesalahan saat menghubungi server AI. Silakan coba lagi.";
   }
 };
 
@@ -45,15 +45,15 @@ export const generateQuizQuestions = async (): Promise<any[]> => {
       model: 'gemini-3-flash-preview',
       contents: [{
         parts: [{ 
-          text: `Buatkan 5 soal kuis kalkulus tingkat universitas (semester 1-2) yang UNIK dan BERBEDA dari sebelumnya. 
-          Gunakan variasi angka dan skenario kasus yang beragam.
-          Topik yang harus ada: Bilangan Real, Limit (trigonometri/tak hingga), Turunan (rantai/implisit), dan Integral (substitusi/parsial).
+          text: `Buatkan 5 soal kuis kalkulus tingkat universitas (semester 1-2) yang UNIK dan BERBEDA. 
+          Topik: Bilangan Real, Limit, Turunan, Integral.
           ID Sesi: ${randomSeed}-${timestamp}
           
-          ATURAN:
-          1. Setiap soal harus memiliki 4 pilihan jawaban yang masuk akal.
-          2. Sertakan pembahasan mendalam dalam LaTeX.
-          3. Gunakan Bahasa Indonesia.` 
+          ATURAN KETAT:
+          1. WAJIB membungkus SEMUA rumus matematika (termasuk variabel tunggal seperti $x$ atau $y$) dengan tanda dollar tunggal ($...$) untuk inline math.
+          2. Gunakan tanda dollar ganda ($$...$$) untuk rumus yang kompleks atau ingin ditampilkan di baris baru.
+          3. Pilihan jawaban harus singkat, padat, dan jika berupa matematika juga wajib dibungkus tanda dollar.
+          4. Berikan pembahasan (explanation) yang mendalam menggunakan Bahasa Indonesia.` 
         }]
       }],
       config: {
@@ -81,15 +81,6 @@ export const generateQuizQuestions = async (): Promise<any[]> => {
     return JSON.parse(text);
   } catch (e) {
     console.error("Failed to generate quiz questions", e);
-    return [
-      {
-        id: 1,
-        category: "Limit",
-        question: "Berapakah nilai dari $\\lim_{x \\to 0} \\frac{\\tan(2x)}{x}$?",
-        options: ["0", "1", "2", "$\\infty$"],
-        correctAnswer: "2",
-        explanation: "Menggunakan sifat limit trigonometri $\\lim_{x \\to 0} \\frac{\\tan(ax)}{bx} = \\frac{a}{b}$, maka hasilnya adalah 2."
-      }
-    ];
+    return [];
   }
 };
