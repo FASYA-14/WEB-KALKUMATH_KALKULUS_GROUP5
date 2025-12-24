@@ -1,20 +1,9 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const getApiKey = () => {
-  // Cek berbagai kemungkinan lokasi API KEY (Vite, Vercel, Node)
-  const key = (window as any).process?.env?.API_KEY || (process?.env?.API_KEY) || "";
-  return key;
-};
-
 export const getMathExplanation = async (type: string, expression: string, context: any) => {
   try {
-    const apiKey = getApiKey();
-    if (!apiKey) {
-      throw new Error("API_KEY tidak ditemukan. Pastikan sudah diatur di Dashboard Vercel (Environment Variables).");
-    }
-    
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: [{
@@ -36,17 +25,13 @@ ATURAN FORMAT OUTPUT:
     return response.text;
   } catch (error: any) {
     console.error("Gemini API Error:", error);
-    if (error.message?.includes("API_KEY")) return error.message;
-    return "Terjadi masalah koneksi ke server AI. Silakan coba lagi nanti.";
+    return "Terjadi masalah koneksi ke server AI. Mohon cek kembali koneksi internet Anda.";
   }
 };
 
 export const generateQuizQuestions = async (): Promise<any[]> => {
   try {
-    const apiKey = getApiKey();
-    if (!apiKey) throw new Error("API Key tidak ditemukan.");
-
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const randomSeed = Math.random().toString(36).substring(7);
 
     const response = await ai.models.generateContent({

@@ -72,6 +72,7 @@ const Limits: React.FC = () => {
 
   const parseSteps = (text: string) => {
     if (!text) return { intro: "", steps: [] };
+    // Regex case-insensitive untuk LANGKAH/Langkah/Step
     const stepRegex = /(?:\*\*|)?(?:LANGKAH|Langkah|Step|step)\s+\d+[:\- ]*(?:\*\*|)?/gi;
     const parts = text.split(stepRegex);
     const intro = parts[0]?.trim() || "";
@@ -118,7 +119,7 @@ const Limits: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
             <div className="md:col-span-8 space-y-8">
-              <h3 className="text-2xl font-black text-slate-800 font-heading pl-4">Solusi</h3>
+              <h3 className="text-2xl font-black text-slate-800 font-heading pl-4">Solusi Langkah demi Langkah</h3>
               <div className="bg-white p-10 md:p-14 rounded-[3rem] shadow-xl border border-slate-50 space-y-10">
                 {(() => {
                   const { intro, steps } = parseSteps(result.explanation || "");
@@ -127,9 +128,9 @@ const Limits: React.FC = () => {
                       {intro && <div className="text-slate-500 italic bg-[#f8fafc] p-8 rounded-3xl border border-slate-100"><MathDisplay math={intro} /></div>}
                       <div className="space-y-8">
                         {steps.map((step, i) => (
-                          <div key={i} className="flex gap-6">
-                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#ffeaeb] text-[#e57373] flex items-center justify-center font-black">{i + 1}</div>
-                            <div className="flex-1 text-slate-600"><MathDisplay math={step} /></div>
+                          <div key={i} className="flex gap-6 animate-fadeIn" style={{ animationDelay: `${i * 100}ms` }}>
+                            <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#ffeaeb] text-[#e57373] flex items-center justify-center font-black text-lg shadow-sm border-2 border-white">{i + 1}</div>
+                            <div className="flex-1 text-slate-600 pt-2"><MathDisplay math={step} /></div>
                           </div>
                         ))}
                       </div>
