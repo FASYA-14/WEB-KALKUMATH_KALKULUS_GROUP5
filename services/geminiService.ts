@@ -1,22 +1,28 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
+const getApiKey = () => {
+  return (window as any).process?.env?.API_KEY || (process?.env?.API_KEY) || "";
+};
+
 export const getMathExplanation = async (type: string, expression: string, context: any) => {
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+    const apiKey = getApiKey();
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: [{
         parts: [{
-          text: `Sebagai asisten ahli KALKUMATH, jelaskan langkah demi langkah penyelesaian ${type} untuk: ${expression}. 
+          text: `Sebagai asisten ahli KALKUMATH, jelaskan langkah demi langkah penyelesaian ${type} untuk persoalan: ${expression}. 
           
           Konteks Data: ${JSON.stringify(context)}.
           
-          ATURAN:
-          1. Gunakan Bahasa Indonesia yang ramah (seperti dosen ke mahasiswa).
-          2. Gunakan LaTeX untuk SEMUA rumus matematika (bungkus dengan $ untuk inline atau $$ untuk blok).
-          3. Berikan penjelasan yang mendalam namun mudah dipahami.
-          4. Fokus pada konsep fundamental.`
+          ATURAN FORMAT OUTPUT:
+          1. Mulailah dengan paragraf ringkasan konsep (2-3 kalimat).
+          2. Gunakan format "Langkah X: [Judul Langkah]" diikuti penjelasannya untuk setiap tahapan.
+          3. Gunakan LaTeX untuk SEMUA rumus matematika (bungkus dengan $ untuk inline atau $$ untuk blok).
+          4. Gunakan Bahasa Indonesia yang akademis namun ramah.
+          5. Pastikan penjelasan fokus pada "mengapa" langkah tersebut diambil.`
         }]
       }],
     });
@@ -30,12 +36,24 @@ export const getMathExplanation = async (type: string, expression: string, conte
 
 export const generateQuizQuestions = async (): Promise<any[]> => {
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+    const apiKey = getApiKey();
+    const ai = new GoogleGenAI({ apiKey });
+    const randomSeed = Math.random().toString(36).substring(7);
+    const timestamp = new Date().getTime();
+
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: [{
         parts: [{ 
-          text: "Buatkan 5 soal kuis kalkulus tingkat universitas yang menantang. Sertakan topik Bilangan Real, Limit, Turunan, dan Integral. Setiap soal harus memiliki 4 pilihan jawaban, 1 kunci jawaban, dan pembahasan mendalam dalam LaTeX." 
+          text: `Buatkan 5 soal kuis kalkulus tingkat universitas (semester 1-2) yang UNIK dan BERBEDA dari sebelumnya. 
+          Gunakan variasi angka dan skenario kasus yang beragam.
+          Topik yang harus ada: Bilangan Real, Limit (trigonometri/tak hingga), Turunan (rantai/implisit), dan Integral (substitusi/parsial).
+          ID Sesi: ${randomSeed}-${timestamp}
+          
+          ATURAN:
+          1. Setiap soal harus memiliki 4 pilihan jawaban yang masuk akal.
+          2. Sertakan pembahasan mendalam dalam LaTeX.
+          3. Gunakan Bahasa Indonesia.` 
         }]
       }],
       config: {
@@ -63,15 +81,14 @@ export const generateQuizQuestions = async (): Promise<any[]> => {
     return JSON.parse(text);
   } catch (e) {
     console.error("Failed to generate quiz questions", e);
-    // Kembalikan soal fallback jika API gagal
     return [
       {
         id: 1,
         category: "Limit",
-        question: "Berapakah nilai dari $\\lim_{x \\to 0} \\frac{\\sin(x)}{x}$?",
-        options: ["0", "1", "$\infty$", "Tidak ada"],
-        correctAnswer: "1",
-        explanation: "Berdasarkan teorema limit trigonometri dasar, $\\lim_{x \\to 0} \\frac{\\sin(x)}{x} = 1$."
+        question: "Berapakah nilai dari $\\lim_{x \\to 0} \\frac{\\tan(2x)}{x}$?",
+        options: ["0", "1", "2", "$\\infty$"],
+        correctAnswer: "2",
+        explanation: "Menggunakan sifat limit trigonometri $\\lim_{x \\to 0} \\frac{\\tan(ax)}{bx} = \\frac{a}{b}$, maka hasilnya adalah 2."
       }
     ];
   }
