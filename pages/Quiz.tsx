@@ -127,7 +127,6 @@ const Quiz: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-10 animate-fadeIn pb-20">
-      {/* Progress Header */}
       <div className="flex items-center justify-between px-6">
         <div className="flex items-center gap-4">
            <div className="bg-slate-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center font-black shadow-xl text-lg">
@@ -148,19 +147,16 @@ const Quiz: React.FC = () => {
       </div>
 
       <div className="bg-white p-10 md:p-16 rounded-[4rem] shadow-2xl border border-indigo-50 relative overflow-hidden">
-        {/* Subtle Background Pattern */}
         <div className="absolute top-0 right-0 p-8 text-indigo-50/30 text-9xl font-black pointer-events-none select-none italic">
           #{currentIdx + 1}
         </div>
 
-        {/* Question Area */}
         <div className="mb-16 relative z-10">
-          <div className="text-2xl md:text-4xl font-black text-slate-900 leading-tight tracking-tight text-center">
+          <div className="text-2xl md:text-3xl font-black text-slate-900 leading-tight tracking-tight text-center">
             <MathDisplay math={q.question} block />
           </div>
         </div>
 
-        {/* Options Grid */}
         <div className="grid grid-cols-1 gap-5 relative z-10">
           {q.options.map((opt: string, i: number) => {
             const isCorrect = opt === q.correctAnswer;
@@ -180,15 +176,17 @@ const Quiz: React.FC = () => {
                 key={i}
                 onClick={() => !showResult && setSelected(opt)}
                 disabled={showResult}
-                className={`group w-full text-left p-7 rounded-[2.5rem] border-2 transition-all flex items-center gap-6 ${btnClass}`}
+                className={`group w-full text-left p-6 md:p-7 rounded-[2.5rem] border-2 transition-all flex items-center gap-6 ${btnClass}`}
               >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl transition-all flex-shrink-0 ${
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center font-black text-lg md:text-xl transition-all flex-shrink-0 ${
                   isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-500 group-hover:bg-indigo-100 group-hover:text-indigo-600'
                 } ${showResult && isCorrect ? '!bg-emerald-500 !text-white' : ''}
                 ${showResult && isSelected && !isCorrect ? '!bg-red-500 !text-white' : ''}`}>
                   {String.fromCharCode(65 + i)}
                 </div>
-                <div className="flex-1 font-bold text-lg md:text-xl"><MathDisplay math={opt} /></div>
+                <div className="flex-1 font-bold text-base md:text-xl">
+                  <MathDisplay math={opt} />
+                </div>
                 
                 {showResult && isCorrect && (
                   <div className="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-lg animate-bounce">✓</div>
@@ -201,7 +199,6 @@ const Quiz: React.FC = () => {
           })}
         </div>
 
-        {/* Action Button */}
         <div className="mt-16">
           {!showResult ? (
             <button 
@@ -221,17 +218,16 @@ const Quiz: React.FC = () => {
           )}
         </div>
 
-        {/* Explanation Section */}
         {showResult && (
-          <div className="mt-12 p-10 bg-gradient-to-br from-slate-900 to-indigo-950 rounded-[3rem] shadow-2xl animate-fadeIn border-4 border-white">
+          <div className="mt-12 p-8 md:p-10 bg-gradient-to-br from-slate-900 to-indigo-950 rounded-[3rem] shadow-2xl animate-fadeIn border-4 border-white">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-2xl">💡</div>
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-white/10 rounded-2xl flex items-center justify-center text-2xl">💡</div>
               <div>
-                <h4 className="text-xs font-black text-indigo-400 uppercase tracking-[0.3em]">Analisis Pembahasan</h4>
-                <p className="text-white font-black text-lg font-heading">Mengapa jawabannya {q.correctAnswer}?</p>
+                <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">Analisis Pembahasan</h4>
+                <p className="text-white font-black text-lg font-heading">Pembahasan:</p>
               </div>
             </div>
-            <div className="text-indigo-100 font-medium leading-relaxed bg-white/5 p-8 rounded-[2rem] border border-white/10 backdrop-blur-sm">
+            <div className="text-indigo-100 font-medium leading-relaxed bg-white/5 p-6 md:p-8 rounded-[2rem] border border-white/10 backdrop-blur-sm">
               <MathDisplay math={q.explanation} invert />
             </div>
           </div>

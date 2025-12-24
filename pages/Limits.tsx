@@ -65,11 +65,17 @@ const Limits: React.FC = () => {
   };
 
   const parseSteps = (text: string) => {
-    // Robust splitting by "LANGKAH X:" or "**LANGKAH X:**" (case insensitive)
-    const stepRegex = /(?:\*\*|)?LANGKAH \d+[:\- ]+(?:\*\*|)?/gi;
+    // Even more robust regex to catch variations of "Langkah"
+    const stepRegex = /(?:\*\*|)?(?:LANGKAH|Langkah|Step|step) \d+[:\- ]*(?:\*\*|)?/gi;
     const parts = text.split(stepRegex);
-    const intro = parts[0].trim();
-    const steps = parts.slice(1).map(s => s.trim());
+    const intro = parts[0]?.trim() || "";
+    const steps = parts.slice(1).map(s => s.trim()).filter(s => s.length > 0);
+    
+    // Fallback if splitting fails
+    if (steps.length === 0 && text.length > 0) {
+      return { intro: "", steps: [text] };
+    }
+    
     return { intro, steps };
   };
 
@@ -140,12 +146,12 @@ const Limits: React.FC = () => {
               <h3 className="text-2xl font-black text-slate-800 font-heading pl-4">Langkah-Langkah Solusi</h3>
               <div className="bg-white p-10 md:p-14 rounded-[3rem] shadow-xl border border-slate-50 space-y-10">
                 {(() => {
-                  const { intro, steps } = parseSteps(result.explanation);
+                  const { intro, steps } = parseSteps(result.explanation || "");
                   return (
                     <>
                       {intro && (
                         <div className="text-slate-500 font-medium leading-relaxed bg-[#f8fafc] p-8 rounded-3xl border border-slate-100 italic text-sm md:text-base">
-                          {intro}
+                          <MathDisplay math={intro} />
                         </div>
                       )}
                       <div className="space-y-8">
@@ -155,7 +161,7 @@ const Limits: React.FC = () => {
                               {i + 1}
                             </div>
                             <div className="space-y-3 pt-1 md:pt-2 flex-1">
-                              <div className="text-slate-600 font-medium leading-relaxed prose prose-indigo max-w-none">
+                              <div className="text-slate-600 font-medium leading-relaxed max-w-none">
                                 <MathDisplay math={step} />
                               </div>
                             </div>
