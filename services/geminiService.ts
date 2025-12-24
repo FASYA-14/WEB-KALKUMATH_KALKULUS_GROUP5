@@ -2,12 +2,15 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 const getApiKey = () => {
+  // Mencoba berbagai cara akses API KEY yang mungkin di Vercel/Vite
   return (window as any).process?.env?.API_KEY || (process?.env?.API_KEY) || "";
 };
 
 export const getMathExplanation = async (type: string, expression: string, context: any) => {
   try {
     const apiKey = getApiKey();
+    if (!apiKey) throw new Error("API Key not found");
+    
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -30,13 +33,15 @@ ATURAN FORMAT OUTPUT:
     return response.text;
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "Maaf, terjadi kesalahan saat menghubungi server AI. Silakan coba lagi.";
+    return "Maaf, terjadi kesalahan saat menghubungi server AI. Pastikan API KEY telah diatur dengan benar di dashboard Vercel.";
   }
 };
 
 export const generateQuizQuestions = async (): Promise<any[]> => {
   try {
     const apiKey = getApiKey();
+    if (!apiKey) throw new Error("API Key not found");
+
     const ai = new GoogleGenAI({ apiKey });
     const randomSeed = Math.random().toString(36).substring(7);
     const timestamp = new Date().getTime();
@@ -50,10 +55,9 @@ export const generateQuizQuestions = async (): Promise<any[]> => {
           ID Sesi: ${randomSeed}-${timestamp}
           
           ATURAN KETAT:
-          1. WAJIB membungkus SEMUA rumus matematika (termasuk variabel tunggal seperti $x$ atau $y$) dengan tanda dollar tunggal ($...$) untuk inline math.
-          2. Gunakan tanda dollar ganda ($$...$$) untuk rumus yang kompleks atau ingin ditampilkan di baris baru.
-          3. Pilihan jawaban harus singkat, padat, dan jika berupa matematika juga wajib dibungkus tanda dollar.
-          4. Berikan pembahasan (explanation) yang mendalam menggunakan Bahasa Indonesia.` 
+          1. WAJIB membungkus SEMUA rumus matematika dengan tanda dollar tunggal ($...$).
+          2. Pilihan jawaban harus singkat dan jika berupa matematika juga wajib dibungkus tanda dollar.
+          3. Berikan pembahasan (explanation) yang mendalam menggunakan Bahasa Indonesia.` 
         }]
       }],
       config: {

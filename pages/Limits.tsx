@@ -65,13 +65,13 @@ const Limits: React.FC = () => {
   };
 
   const parseSteps = (text: string) => {
-    // Even more robust regex to catch variations of "Langkah"
+    if (!text) return { intro: "", steps: [] };
+    // Regex super kuat untuk mendeteksi variasi "Langkah X:"
     const stepRegex = /(?:\*\*|)?(?:LANGKAH|Langkah|Step|step) \d+[:\- ]*(?:\*\*|)?/gi;
     const parts = text.split(stepRegex);
     const intro = parts[0]?.trim() || "";
     const steps = parts.slice(1).map(s => s.trim()).filter(s => s.length > 0);
     
-    // Fallback if splitting fails
     if (steps.length === 0 && text.length > 0) {
       return { intro: "", steps: [text] };
     }
@@ -150,7 +150,7 @@ const Limits: React.FC = () => {
                   return (
                     <>
                       {intro && (
-                        <div className="text-slate-500 font-medium leading-relaxed bg-[#f8fafc] p-8 rounded-3xl border border-slate-100 italic text-sm md:text-base">
+                        <div className="text-slate-500 font-medium leading-relaxed bg-[#f8fafc] p-8 rounded-3xl border border-slate-100 italic text-sm md:text-base mb-6">
                           <MathDisplay math={intro} />
                         </div>
                       )}

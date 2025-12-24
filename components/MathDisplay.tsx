@@ -27,7 +27,8 @@ const MathDisplay: React.FC<MathDisplayProps> = ({ math, block = false, classNam
     };
 
     typeset();
-    const timer = setTimeout(typeset, 150);
+    // Re-run after a short delay for late rendering
+    const timer = setTimeout(typeset, 200);
     return () => clearTimeout(timer);
   }, [math]);
 
