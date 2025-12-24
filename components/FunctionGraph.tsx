@@ -10,16 +10,19 @@ interface FunctionGraphProps {
   mode?: 'normal' | 'volume';
 }
 
-const FunctionGraph: React.FC<FunctionGraphProps> = ({ expression, range = [-10, 10], points = 100, mode = 'normal' }) => {
+const FunctionGraph: React.FC<FunctionGraphProps> = ({ expression, range = [-5, 5], points = 80, mode = 'normal' }) => {
   const data = useMemo(() => {
     const plotData = [];
-    const step = (range[1] - range[0]) / points;
+    // Pastikan range valid
+    const start = isFinite(range[0]) ? range[0] : -5;
+    const end = isFinite(range[1]) ? range[1] : 5;
+    const step = (end - start) / points;
     
     try {
       const node = math.parse(expression);
       const compiled = node.compile();
 
-      for (let x = range[0]; x <= range[1]; x += step) {
+      for (let x = start; x <= end; x += step) {
         try {
           const y = compiled.evaluate({ x });
           if (typeof y === 'number' && isFinite(y)) {
@@ -34,10 +37,11 @@ const FunctionGraph: React.FC<FunctionGraphProps> = ({ expression, range = [-10,
             }
           }
         } catch (e) {
-          // Skip undefined points
+          // Lewati titik yang tidak terdefinisi (misal pembagian nol)
         }
       }
     } catch (e) {
+      console.error("Graph Error:", e);
       return [];
     }
     return plotData;
@@ -45,14 +49,15 @@ const FunctionGraph: React.FC<FunctionGraphProps> = ({ expression, range = [-10,
 
   if (data.length === 0) {
     return (
-      <div className="h-64 flex items-center justify-center bg-slate-50 rounded-[2rem] text-slate-400 italic font-medium border-2 border-dashed border-slate-200">
+      <div className="h-[350px] flex flex-col items-center justify-center bg-slate-50 rounded-[2rem] text-slate-400 italic font-medium border-2 border-dashed border-slate-200">
+        <span className="text-4xl mb-2">📉</span>
         Grafik tidak dapat dimuat (Ekspresi tidak valid)
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col min-h-[350px] transition-all duration-500 hover:shadow-2xl">
+    <div className="w-full bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col transition-all duration-500 hover:shadow-2xl">
       <div className="flex items-center justify-between mb-6">
         <h4 className="text-xs font-black text-slate-500 flex items-center gap-2 uppercase tracking-widest">
           <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
@@ -62,7 +67,8 @@ const FunctionGraph: React.FC<FunctionGraphProps> = ({ expression, range = [-10,
           f(x) = {expression}
         </div>
       </div>
-      <div className="flex-1 w-full min-h-0">
+      {/* Container ini HARUS memiliki tinggi fixed untuk ResponsiveContainer */}
+      <div className="w-full h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>

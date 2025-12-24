@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 const getApiKey = () => {
-  // In Vercel/Vite, we often need to check both window.process and standard process
+  // Cek berbagai kemungkinan lokasi API KEY (Vite, Vercel, Node)
   const key = (window as any).process?.env?.API_KEY || (process?.env?.API_KEY) || "";
   return key;
 };
@@ -10,7 +10,9 @@ const getApiKey = () => {
 export const getMathExplanation = async (type: string, expression: string, context: any) => {
   try {
     const apiKey = getApiKey();
-    if (!apiKey) throw new Error("API Key not found. Please set API_KEY in your environment variables.");
+    if (!apiKey) {
+      throw new Error("API_KEY tidak ditemukan. Pastikan sudah diatur di Dashboard Vercel (Environment Variables).");
+    }
     
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
@@ -25,40 +27,39 @@ ATURAN FORMAT OUTPUT:
 1. Mulailah dengan paragraf ringkasan konsep (2-3 kalimat).
 2. Tampilkan langkah-langkah dengan format persis: "LANGKAH X: [JUDUL]" di awal baris baru untuk setiap langkah.
 3. JANGAN gunakan tanda bintang (**) pada teks "LANGKAH X:".
-4. PENTING: Gunakan tanda dollar ($) untuk SEMUA rumus matematika (contoh: $f(x) = x^2$ atau $\\frac{a}{b}$). Jika rumus di baris baru gunakan double dollar ($$).
+4. PENTING: Gunakan tanda dollar ($) untuk SEMUA rumus matematika (contoh: $f(x) = x^2$ atau $\\frac{a}{b}$).
 5. Gunakan Bahasa Indonesia yang akademis namun ramah.`
         }]
       }],
     });
 
     return response.text;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini API Error:", error);
-    return `Gagal memproses penjelasan. Pesan Error: ${error instanceof Error ? error.message : 'Koneksi API Gagal'}`;
+    if (error.message?.includes("API_KEY")) return error.message;
+    return "Terjadi masalah koneksi ke server AI. Silakan coba lagi nanti.";
   }
 };
 
 export const generateQuizQuestions = async (): Promise<any[]> => {
   try {
     const apiKey = getApiKey();
-    if (!apiKey) throw new Error("API Key not found");
+    if (!apiKey) throw new Error("API Key tidak ditemukan.");
 
     const ai = new GoogleGenAI({ apiKey });
     const randomSeed = Math.random().toString(36).substring(7);
-    const timestamp = new Date().getTime();
 
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: [{
         parts: [{ 
-          text: `Buatkan 5 soal kuis kalkulus tingkat universitas (semester 1-2) yang UNIK dan BERBEDA. 
-          Topik: Bilangan Real, Limit, Turunan, Integral.
-          ID Sesi: ${randomSeed}-${timestamp}
+          text: `Buatkan 5 soal kuis kalkulus tingkat universitas yang UNIK. 
+          Topik acak: Bilangan Real, Limit, Turunan, Integral.
+          ID Sesi: ${randomSeed}
           
-          ATURAN KETAT:
-          1. WAJIB membungkus SEMUA rumus matematika (termasuk variabel tunggal) dengan tanda dollar tunggal ($...$).
-          2. Pilihan jawaban harus singkat dan jika berupa matematika juga wajib dibungkus tanda dollar.
-          3. Berikan pembahasan (explanation) yang mendalam menggunakan Bahasa Indonesia.` 
+          ATURAN:
+          1. WAJIB membungkus SEMUA rumus dengan tanda dollar tunggal ($...$).
+          2. Pembahasan dalam Bahasa Indonesia.` 
         }]
       }],
       config: {
@@ -82,10 +83,9 @@ export const generateQuizQuestions = async (): Promise<any[]> => {
     });
 
     const text = response.text;
-    if (!text) return [];
-    return JSON.parse(text);
+    return text ? JSON.parse(text) : [];
   } catch (e) {
-    console.error("Failed to generate quiz questions", e);
-    throw e; // Throw so the UI can catch it and show appropriate error message
+    console.error("Quiz Error:", e);
+    return [];
   }
 };
